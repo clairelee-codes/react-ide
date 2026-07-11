@@ -1,7 +1,16 @@
+import { useContext } from "react";
+import Modal from "../../Providers/Modals/Modal";
 import "./index.scss";
 import RightComponent from "./RightComponent";
+import { ModalContext } from "../../Providers/ModalProvider";
 
 const HomePage = () => {
+  const modalFeatures = useContext(ModalContext);
+
+  const openCreatePlaygroundModal = () => {
+    modalFeatures.openModal("CREATE_PLAYGROUND");
+  };
+
   return (
     <div className="home-container">
       <div className="left-container">
@@ -9,13 +18,14 @@ const HomePage = () => {
           <img src="logo.png" />
           <h1>PIO IDE</h1>
           <h2>Code.Compile.Debug</h2>
-          <button>
+          <button onClick={openCreatePlaygroundModal}>
             <span className="material-icons">add</span>
             <span>Create Playground</span>
           </button>
         </div>
       </div>
       <RightComponent />
+      <Modal />
     </div>
   );
 };
