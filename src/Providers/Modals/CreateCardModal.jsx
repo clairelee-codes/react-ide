@@ -1,23 +1,18 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import "./createPlaygroundModal.scss";
 import { ModalContext } from "../ModalProvider";
 import { PlaygroundContext } from "../PlaygroundProvider";
 
-export const CreatePlaygroundModal = () => {
-  const { closeModal } = useContext(ModalContext);
-  const playgroundFeatures = useContext(PlaygroundContext);
+export const CreateCardModal = () => {
+  const { closeModal, modalPayload } = useContext(ModalContext);
+  const { createFile } = useContext(PlaygroundContext);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // console.log(e.target?.folderName?.value);
-    const folderName = e.target.folderName.value;
     const fileName = e.target.fileName.value;
     const language = e.target.language.value;
-    playgroundFeatures.createNewPlayground({
-      folderName,
-      fileName,
-      language,
-    });
+
+    createFile(modalPayload, fileName, language);
     closeModal();
   };
 
@@ -29,12 +24,7 @@ export const CreatePlaygroundModal = () => {
         </span>
         <h1>Create New Playground</h1>
         <div className="item">
-          <p>Enter folder Name</p>
-          <input name="folderName" required />
-        </div>
-        <div className="item">
-          <p>Enter card Name</p>
-          <input name="fileName" required />
+          <input name="fileName" placeholder="Enter card title" required />
         </div>
         <div className="item">
           <select name="language">

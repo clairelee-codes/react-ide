@@ -11,7 +11,10 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/playground" element={<PlaygroundPage />} />
+            <Route
+              path="/playground/:folderId/:fileId"
+              element={<PlaygroundPage />}
+            />
           </Routes>
         </BrowserRouter>
       </ModalProvider>
