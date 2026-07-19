@@ -47,11 +47,14 @@ const Folder = ({ folderTitle, files, folderId }) => {
       </div>
       <div className="cards-container">
         {files?.map((file, index) => {
-          const handleEditFile = () => {
+          const handleEditFile = (e) => {
+            e.stopPropagation();
+
             setModalPayload({ fileId: file.id, folderId: folderId });
             openModal(modalConstants.UPDATE_FILE_TITLE);
           };
-          const handleDeleteFile = () => {
+          const handleDeleteFile = (e) => {
+            e.stopPropagation();
             deleteFile(folderId, file.id);
           };
 

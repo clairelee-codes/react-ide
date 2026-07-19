@@ -2,10 +2,13 @@ import { useContext, useRef, useState } from "react";
 import "./editorContainer.scss";
 import Editor from "@monaco-editor/react";
 import { PlaygroundContext } from "../../Providers/PlaygroundProvider";
+import { useFileUpload } from "../../hooks/useFileUpload";
+import { downloadTextFile } from "../../utils/downloadTextFile";
 
 const editorOptions = {
   fontSize: 16,
   wordWrap: "on",
+  automaticLayout: true,
 };
 
 const fileExtensionMapping = {
@@ -15,41 +18,31 @@ const fileExtensionMapping = {
   java: "java",
 };
 
-export const EditorContainer = ({ folderId, fileId }) => {
-  const { getCode, getLanguage, resetLanguageAndCode, getDefaultCode } =
-    useContext(PlaygroundContext);
-  const [code, setCode] = useState(() => {
-    return getCode(folderId, fileId);
-  });
-  const [language, setLanguage] = useState(() => {
-    return getLanguage(folderId, fileId);
-  });
+export const EditorContainer = ({ folderId, fileId, runCode }) => {
+  const { getFile, getDefaultCode, saveCode } = useContext(PlaygroundContext);
+  const {
+    title,
+    code: initialCode,
+    language: initialLanguage,
+  } = getFile(folderId, fileId) ?? {};
+
+  const [code, setCode] = useState(initialCode);
+  const [language, setLanguage] = useState(initialLanguage);
   const [theme, setTheme] = useState("vs-dark");
+  const [isFullScreen, setIsFullScreen] = useState(false);
   const codeRef = useRef(code);
 
   const handleChangeCode = (newCode) => {
     codeRef.current = newCode;
-    console.log(newCode);
   };
 
-  const handleUploadCode = (e) => {
-    const file = e.target.files[0];
-    const fileType = file.type.includes("text");
-    console.log(file);
-
-    if (fileType) {
-      const fileReader = new FileReader();
-      fileReader.readAsText(file);
-      fileReader.onload = function (e) {
-        // console.log(e.target.result);
-        const importedCode = e.target.result;
-        setCode(importedCode);
-        codeRef.current = importedCode;
-      };
-    } else {
-      alert("Please Choose a program file");
-    }
-  };
+  const handleUploadCode = useFileUpload(
+    (result) => {
+      setCode(result);
+      codeRef.current = result;
+    },
+    { onInvalidType: () => alert("Please Choose a program file") },
+  );
 
   const handleExportCode = () => {
     // console.log(codeRef);
@@ -57,20 +50,18 @@ export const EditorContainer = ({ folderId, fileId }) => {
 
     if (!codeValue) {
       alert("Please Type Some code in the editor before exporting");
+      return;
     }
 
-    const codeBlob = new Blob([codeValue], { type: "text/plain" });
-    const downloadUrl = URL.createObjectURL(codeBlob);
-    const link = document.createElement("a");
-    link.href = downloadUrl;
-    link.download = `code.${fileExtensionMapping[language]}`;
-    link.click();
+    downloadTextFile(codeValue, `code.${fileExtensionMapping[language]}`);
   };
 
   const handleChangeLanguage = (e) => {
-    resetLanguageAndCode(folderId, fileId, e.target.value);
-    setCode(getCode(folderId, fileId));
-    // setCode(getDefaultCode(e.target.value));
+    const defaultCode = getDefaultCode(e.target.value);
+    codeRef.current = defaultCode;
+    // console.log(codeRef.current);
+
+    setCode(defaultCode);
     setLanguage(e.target.value);
   };
 
@@ -78,13 +69,32 @@ export const EditorContainer = ({ folderId, fileId }) => {
     setTheme(e.target.value);
   };
 
+  const handleSaveCode = () => {
+    // console.log(codeRef.current);
+    saveCode(folderId, fileId, codeRef.current, language);
+    alert("Code Saved Successfully");
+  };
+
+  const handleFullScreen = () => {
+    setIsFullScreen((prev) => !prev);
+  };
+
+  const handleRunCode = () => {
+    runCode({
+      code: codeRef.current,
+      language,
+    });
+  };
   return (
-    <div className="root-editor-container">
+    <div
+      className="root-editor-container"
+      style={isFullScreen ? styles.fullScreen : {}}
+    >
       <div className="editor-header">
         <div className="editor-left-container">
-          <b className="title">{"title of the card"}</b>
+          <b className="title">{title}</b>
           <span className="material-icons">edit</span>
-          <button>Save code</button>
+          <button onClick={handleSaveCode}>Save code</button>
         </div>
         <div className="editor-right-container">
           <select value={language} onChange={handleChangeLanguage}>
@@ -110,9 +120,9 @@ export const EditorContainer = ({ folderId, fileId }) => {
         />
       </div>
       <div className="editor-footer">
-        <button className="btn">
+        <button className="btn" onClick={handleFullScreen}>
           <span className="material-icons">fullscreen</span>
-          <span>Full Screen</span>
+          <span>{isFullScreen ? "Minimize" : "Full Screen"}</span>
         </button>
         <label htmlFor="import-code" className="btn">
           <span className="material-icons">cloud_download</span>
@@ -128,11 +138,22 @@ export const EditorContainer = ({ folderId, fileId }) => {
           <span className="material-icons">cloud_upload</span>
           <span>Export Code</span>
         </button>
-        <button className="btn">
+        <button className="btn" onClick={handleRunCode}>
           <span className="material-icons">play_arrow</span>
           <span>Run Code</span>
         </button>
       </div>
     </div>
   );
+};
+
+const styles = {
+  fullScreen: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 10,
+  },
 };

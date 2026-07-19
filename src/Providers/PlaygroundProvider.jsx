@@ -10,7 +10,7 @@ int main() {
     return 0;
 }`,
   javascript: `console.log("hello world");`,
-  python: `print("hello python)`,
+  python: `print("hello python")`,
   java: `public class Main {
     public static void main(String[] args) {
         System.out.println("Hello, World!");
@@ -56,6 +56,23 @@ export const PlaygroundProvider = ({ children }) => {
     return initialData;
   });
 
+  const updateFolder = (folderId, updater) => {
+    setFolders((folders) =>
+      folders.map((folder) =>
+        folder.id !== folderId ? folder : updater(folder),
+      ),
+    );
+  };
+
+  const updateFile = (folderId, fileId, updater) => {
+    updateFolder(folderId, (folder) => ({
+      ...folder,
+      files: folder.files.map((file) =>
+        file.id !== fileId ? file : updater(file),
+      ),
+    }));
+  };
+
   const createNewPlayground = (newPlayground) => {
     // console.log({ newPlayground }, "inside the playground provider");
     const { fileName, folderName, language } = newPlayground;
@@ -94,39 +111,24 @@ export const PlaygroundProvider = ({ children }) => {
   };
 
   const editFolderTitle = (newFolderName, id) => {
-    setFolders((folders) =>
-      folders.map((folder) =>
-        folder.id !== id ? folder : { ...folder, title: newFolderName },
-      ),
-    );
+    updateFolder(id, (folder) => ({
+      ...folder,
+      title: newFolderName,
+    }));
   };
 
   const editFileTitle = (newFileName, folderId, fileId) => {
-    setFolders((folders) =>
-      folders.map((folder) =>
-        folder.id !== folderId
-          ? folder
-          : {
-              ...folder,
-              files: folder.files.map((file) =>
-                file.id !== fileId ? file : { ...file, title: newFileName },
-              ),
-            },
-      ),
-    );
+    updateFile(folderId, fileId, (file) => ({
+      ...file,
+      title: newFileName,
+    }));
   };
 
   const deleteFile = (folderId, fileId) => {
-    setFolders((folders) =>
-      folders.map((folder) =>
-        folder.id !== folderId
-          ? folder
-          : {
-              ...folder,
-              files: folder.files.filter((file) => file.id !== fileId),
-            },
-      ),
-    );
+    updateFolder(folderId, (folder) => ({
+      ...folder,
+      files: folder.files.filter((file) => file.id !== fileId),
+    }));
   };
 
   const createFile = (folderId, fileName, language) => {
@@ -137,49 +139,43 @@ export const PlaygroundProvider = ({ children }) => {
       language: language,
     };
 
-    setFolders((folders) =>
-      folders.map((folder) =>
-        folder.id !== folderId
-          ? folder
-          : { ...folder, files: [...folder.files, file] },
-      ),
-    );
+    updateFolder(folderId, (folder) => ({
+      ...folder,
+      files: [...folder.files, file],
+    }));
   };
 
-  const resetLanguageAndCode = (folderId, fileId, language) => {
-    setFolders((folders) =>
-      folders.map((folder) =>
-        folder.id !== folderId
-          ? folder
-          : {
-              ...folder,
-              files: folder.files.map((file) =>
-                file.id !== fileId
-                  ? file
-                  : {
-                      ...file,
-                      code: defaultCodes[language],
-                      language: language,
-                    },
-              ),
-            },
-      ),
-    );
+  const saveCode = (folderId, fileId, newCode, language) => {
+    updateFile(folderId, fileId, (file) => ({
+      ...file,
+      code: newCode,
+      language: language,
+    }));
   };
-
-  const getCode = (folderId, fileId) => {
+  const getFile = (folderId, fileId) => {
     const folder = folders.find((folder) => folder.id === folderId);
-    // console.log(folder);
-    const file = folder?.files.find((file) => file.id === fileId);
-    return file?.code;
+    return folder?.files.find((file) => file.id === fileId);
   };
 
-  const getLanguage = (folderId, fileId) => {
-    const folder = folders.find((folder) => folder.id === folderId);
-    // console.log(folder);
-    const file = folder?.files.find((file) => file.id === fileId);
-    return file?.language;
-  };
+  // const getCode = (folderId, fileId) => {
+  //   const folder = folders.find((folder) => folder.id === folderId);
+  //   // console.log(folder);
+  //   const file = folder?.files.find((file) => file.id === fileId);
+  //   return file?.code;
+  // };
+
+  // const getLanguage = (folderId, fileId) => {
+  //   const folder = folders.find((folder) => folder.id === folderId);
+  //   // console.log(folder);
+  //   const file = folder?.files.find((file) => file.id === fileId);
+  //   return file?.language;
+  // };
+
+  // const getFileTitle = (folderId, fileId) => {
+  //   const folder = folders.find((folder) => folder.id === folderId);
+  //   const file = folder?.files.find((file) => file.id === fileId);
+  //   return file?.title;
+  // };
 
   const getDefaultCode = (language) => {
     return defaultCodes[language];
@@ -202,9 +198,11 @@ export const PlaygroundProvider = ({ children }) => {
     editFileTitle,
     deleteFile,
     createFile,
-    resetLanguageAndCode,
-    getCode,
-    getLanguage,
+    saveCode,
+    getFile,
+    // getCode,
+    // getLanguage,
+    // getFileTitle,
     getDefaultCode,
   };
 
