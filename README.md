@@ -1,4 +1,4 @@
-# 🐧 PIO IDE
+# <img src="public/logo.png" alt="PIO IDE logo" width="32" height="32" valign="middle" /> PIO IDE
 
 브라우저에서 바로 코드를 작성하고 실행해보는 웹 기반 코드 플레이그라운드(IDE)입니다.
 폴더 단위로 프로젝트를 정리하고, 파일마다 언어(C++ / Java / JavaScript / Python)를 선택해 [Judge0](https://judge0.com/) API로 즉시 컴파일·실행 결과를 확인할 수 있습니다.
