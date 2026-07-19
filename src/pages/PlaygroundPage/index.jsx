@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "./index.scss";
 import { EditorContainer } from "./EditorContainer";
 import { useState } from "react";
@@ -9,6 +9,8 @@ import { downloadTextFile } from "../../utils/downloadTextFile";
 const PlaygroundPage = () => {
   const params = useParams();
   const { fileId, folderId } = params;
+
+  const navigate = useNavigate();
 
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
@@ -48,10 +50,17 @@ const PlaygroundPage = () => {
     makeSubmission({ code, language, stdin: input, callback });
   };
 
+  const navigateToHomePage = () => {
+    navigate(`/`);
+  };
+
   return (
     <div className="playground-container">
       <div className="header-container">
-        <img className="logo" src="/logo.png" />
+        <div className="logo-container" onClick={navigateToHomePage}>
+          <img className="logo" src="/logo.png" />
+          <h1>PIO IDE</h1>
+        </div>
       </div>
       <div className="content-container">
         <div className="editor-container">

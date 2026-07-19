@@ -27,6 +27,13 @@
     justify-content: center;
     background-color: #1e1e1e;
     padding: 2px 0;
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      cursor: pointer;
+      color: white;
+    }
   }
   .input-output-container {
     display: flex;

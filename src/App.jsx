@@ -3,6 +3,7 @@ import HomePage from "./pages/HomePage";
 import PlaygroundPage from "./pages/PlaygroundPage";
 import { PlaygroundProvider } from "./Providers/PlaygroundProvider";
 import { ModalProvider } from "./Providers/ModalProvider";
+import Modal from "./Providers/Modals/Modal";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
             />
           </Routes>
         </BrowserRouter>
+        <Modal />
       </ModalProvider>
     </PlaygroundProvider>
   );

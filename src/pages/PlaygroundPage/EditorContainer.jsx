@@ -4,6 +4,7 @@ import Editor from "@monaco-editor/react";
 import { PlaygroundContext } from "../../Providers/PlaygroundProvider";
 import { useFileUpload } from "../../hooks/useFileUpload";
 import { downloadTextFile } from "../../utils/downloadTextFile";
+import { modalConstants, ModalContext } from "../../Providers/ModalProvider";
 
 const editorOptions = {
   fontSize: 16,
@@ -26,6 +27,7 @@ export const EditorContainer = ({ folderId, fileId, runCode }) => {
     language: initialLanguage,
   } = getFile(folderId, fileId) ?? {};
 
+  const { openModal, setModalPayload } = useContext(ModalContext);
   const [code, setCode] = useState(initialCode);
   const [language, setLanguage] = useState(initialLanguage);
   const [theme, setTheme] = useState("vs-dark");
@@ -85,6 +87,14 @@ export const EditorContainer = ({ folderId, fileId, runCode }) => {
       language,
     });
   };
+
+  const handleEditFile = (e) => {
+    e.stopPropagation();
+
+    setModalPayload({ fileId: fileId, folderId: folderId });
+    openModal(modalConstants.UPDATE_FILE_TITLE);
+  };
+
   return (
     <div
       className="root-editor-container"
@@ -93,7 +103,9 @@ export const EditorContainer = ({ folderId, fileId, runCode }) => {
       <div className="editor-header">
         <div className="editor-left-container">
           <b className="title">{title}</b>
-          <span className="material-icons">edit</span>
+          <span className="material-icons" onClick={handleEditFile}>
+            edit
+          </span>
           <button onClick={handleSaveCode}>Save code</button>
         </div>
         <div className="editor-right-container">

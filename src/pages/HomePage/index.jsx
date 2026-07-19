@@ -1,5 +1,4 @@
 import { useContext } from "react";
-import Modal from "../../Providers/Modals/Modal";
 import "./index.scss";
 import RightComponent from "./RightComponent";
 import { modalConstants, ModalContext } from "../../Providers/ModalProvider";
@@ -25,7 +24,6 @@ const HomePage = () => {
         </div>
       </div>
       <RightComponent />
-      <Modal />
     </div>
   );
 };
