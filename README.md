@@ -96,18 +96,23 @@ npm install
 
 ### 환경 변수
 
-코드 실행 기능은 RapidAPI의 [Judge0 CE API](https://rapidapi.com/judge0-official/api/judge0-ce)를 사용합니다. 프로젝트 루트에 `.env` 파일을 만들고 API 키를 채워주세요.
+코드 실행 기능은 RapidAPI의 [Judge0 CE API](https://rapidapi.com/judge0-official/api/judge0-ce)를 사용합니다. API 키는 `api/` 폴더의 서버리스 함수(`api/submissions.js`, `api/submissions/[token].js`)에서만 사용되어 브라우저에 노출되지 않습니다. 프로젝트 루트에 `.env` 파일을 만들고 API 키를 채워주세요.
 
 ```
-VITE_RAPIDAPI_API_KEY=your_rapidapi_key
+RAPIDAPI_API_KEY=your_rapidapi_key
 ```
+
+> `VITE_` 접두사를 붙이면 클라이언트 번들에 그대로 노출되므로 사용하지 않습니다.
 
 ### 실행
 
+`/api` 라우트는 Vite 개발 서버가 아니라 Vercel 서버리스 함수로 동작하므로, 로컬에서 실행 기능까지 테스트하려면 [Vercel CLI](https://vercel.com/docs/cli)로 실행해야 합니다.
+
 ```bash
-npm run dev       # 개발 서버
+npm install -g vercel   # 최초 1회
+vercel dev               # 개발 서버 (API 라우트 포함)
 npm run build      # 프로덕션 빌드
-npm run preview    # 빌드 결과 미리보기
+npm run preview    # 빌드 결과 미리보기 (API 라우트 미포함)
 npm run lint       # ESLint 검사
 ```
 

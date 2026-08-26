@@ -5,12 +5,10 @@ const languageCodeMap = {
   java: 91,
 };
 async function getSubmission(tokenId, callback) {
-  const url = `https://judge0-ce.p.rapidapi.com/submissions/${tokenId}?base64_encoded=true&fields=*`;
+  const url = `/api/submissions?tokenId=${tokenId}`;
   const options = {
     method: "GET",
     headers: {
-      "x-rapidapi-key": import.meta.env.VITE_RAPIDAPI_API_KEY,
-      "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
       "Content-Type": "application/json",
     },
   };
@@ -25,13 +23,10 @@ async function getSubmission(tokenId, callback) {
 }
 
 export async function makeSubmission({ code, language, callback, stdin }) {
-  const url =
-    "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&wait=false&fields=*";
+  const url = "/api/submissions";
   const options = {
     method: "POST",
     headers: {
-      "x-rapidapi-key": import.meta.env.VITE_RAPIDAPI_API_KEY,
-      "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
