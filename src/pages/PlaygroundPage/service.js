@@ -6,6 +6,7 @@ const languageCodeMap = {
 };
 async function getSubmission(tokenId, callback) {
   const url = `/api/submissions?tokenId=${tokenId}`;
+  // const url = `/api/submissions/${tokenId}`;
   const options = {
     method: "GET",
     headers: {
